@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0-*",
+  "authors": [
+    "wm"
+  ],
+  "description": "Additional tools for testing software",
+  "title": "Anixe.QualityTools",
+  "projectUrl": "https://github.com/wmaryszczak/anixe_qualitytools",
+  "packOptions": {
+    "owners": [
+      "wm",
+      "anixe"
+    ],
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/wmaryszczak/anixe_qualitytools"
+    },
+    "tags": [
+      "anixe"
+    ]
+  },
+
+  "buildOptions": {
+    "debugType": "portable"
+  },
+  "dependencies": {
+    "xunit": "2.2.0-*"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.1"
+      }
+    }
+  }
+}
