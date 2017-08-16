@@ -22,7 +22,7 @@ namespace Anixe.QualityTools
       var dir = new DirectoryInfo(exampleDirPath);
       var projectDir = dir.Parent.Name;
       var testCasePath = Path.Combine(testCase.FullName.Replace(projectDir + ".", string.Empty).Split('.'));
-      var examplePath = Path.Combine(exampleDirPath, testCasePath, (suffix ?? string.Empty), ".", ext);
+      var examplePath = Path.Combine(exampleDirPath, testCasePath + (suffix ?? string.Empty) + "." + ext);
       return examplePath;
     }  
     
