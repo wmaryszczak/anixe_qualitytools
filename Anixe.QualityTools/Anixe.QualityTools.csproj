@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Additional tools for testing software</Description>
+    <AssemblyTitle>Anixe.QualityTools</AssemblyTitle>
+    <VersionPrefix>1.0.2</VersionPrefix>
+    <Authors>wm</Authors>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>Anixe.QualityTools</AssemblyName>
+    <PackageId>Anixe.QualityTools</PackageId>
+    <PackageTags>anixe</PackageTags>
+    <PackageProjectUrl>https://github.com/wmaryszczak/anixe_qualitytools</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/wmaryszczak/anixe_qualitytools</RepositoryUrl>
+  </PropertyGroup>
+
+</Project>
