@@ -100,7 +100,6 @@ namespace Anixe.QualityTools.Test
             Assert.NotNull(ex);
 
             Assert.Equal(
-              ex.Message,
 @"################### expected:
 {
   ""arr"": [
@@ -124,8 +123,7 @@ Assert.Equal() Failure
 Expected: 1
 Actual:   3
           ↑ (pos 0)
-"
-            );
+", ex.Message, ignoreLineEndingDifferences: true);
         }
 
         [Fact]
@@ -148,7 +146,6 @@ Actual:   3
             Assert.NotNull(ex);
 
             Assert.Equal(
-                ex.Message,
 @"################### expected:
 {
   ""arr"": [
@@ -174,7 +171,7 @@ Actual:   3
   ""a"": 1,
   ""b"": 2
 }
-");
+", ex.Message, ignoreLineEndingDifferences: true);
         }
 
       [Fact]
@@ -197,7 +194,6 @@ Actual:   3
             Assert.NotNull(ex);
 
             Assert.Equal(
-                ex.Message,
 @"################### expected:
 {
   ""a"": {}
@@ -209,7 +205,7 @@ Actual:   3
 }
 
 Token of path 'a' and type Object is different from 'a' of type Integer
-");
+", ex.Message, ignoreLineEndingDifferences: true);
       }
     }
 
