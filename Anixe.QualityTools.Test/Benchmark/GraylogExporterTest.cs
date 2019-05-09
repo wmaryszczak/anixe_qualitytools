@@ -15,7 +15,7 @@ namespace Anixe.QualityTools.Test.Benchmark
       var consoleOutput = new StringBuilder();
       var consoleLogger = new SimpleConsoleLogger(consoleOutput);
       var summary = MockFactory.CreateSummary(typeof(MockFactory.MockBenchmarkClass));
-      var subject = new GraylogExporter("some_app", udpClient: null);
+      var subject = new GraylogExporter("some_app", udpClient: null) { HostName = "SomeHost" };
       subject.ExportToFiles(summary, consoleLogger);
       Assert.Equal(File.ReadAllText("Benchmark/expected_console_output.txt"), consoleOutput.ToString(), ignoreLineEndingDifferences: true);
     }

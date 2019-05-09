@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Text;
 using System.Net.Sockets;
+using System.Net;
 
 namespace Anixe.QualityTools.Benchmark
 {
@@ -15,6 +16,7 @@ namespace Anixe.QualityTools.Benchmark
     private readonly string env;
     private readonly string platform;
     public TimeSpan Timeout = new TimeSpan(0, 0, 10);
+    public string HostName = Dns.GetHostName();
 
     public string Name => nameof(GraylogExporter);
 
@@ -45,6 +47,7 @@ namespace Anixe.QualityTools.Benchmark
           var log = new Dictionary<string, object>
           {
             { "short_message", r.BenchmarkCase.DisplayInfo },
+            { "host", this.HostName },
             { "_time_taken_median_ns", r.ResultStatistics.Median },
             { "_time_taken_mean_ns", r.ResultStatistics.Mean },
             { "_bytes_allocated", r.GcStats.BytesAllocatedPerOperation },
