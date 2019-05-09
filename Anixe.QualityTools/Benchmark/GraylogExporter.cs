@@ -10,13 +10,20 @@ using System.Net;
 
 namespace Anixe.QualityTools.Benchmark
 {
+  /// <summary>
+  /// Custom BenchmarkDotNet Exporter that can be defined with IConfig. Sends result as gelf message via UDP protocol
+  /// </summary>
   public class GraylogExporter : IExporter
   {
     private readonly UdpClient udpClient;
     private readonly string env;
     private readonly string platform;
-    public TimeSpan Timeout = new TimeSpan(0, 0, 10);
+
+    /// <summary>Use this property to set `host` property with custom value. Default is `Dns.GetHostName()`</summary>
     public string HostName = Dns.GetHostName();
+
+    /// <summary>If Enabled is set false then no udp request will be sent but only console log displayed</summary>
+    public bool Enabled = true;
 
     public string Name => nameof(GraylogExporter);
 
@@ -63,7 +70,7 @@ namespace Anixe.QualityTools.Benchmark
           var inputString = JsonConvert.SerializeObject(log);
           logger.WriteLine(inputString);
 
-          if (udpClient != null)
+          if (this.Enabled)
           {
             var bytes = Encoding.UTF8.GetBytes(inputString);
             this.udpClient.Send(bytes, bytes.Length);
