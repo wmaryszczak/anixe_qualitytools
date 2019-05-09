@@ -33,7 +33,7 @@ namespace Anixe.QualityTools.Benchmark
       .With(Job.Core.With(new GcMode()
       {
         Force = false // tell BenchmarkDotNet not to force GC collections after every iteration
-      }));
+      }).With(new[] { new EnvironmentVariable("BENCHMARK", "1") }));
 
     public BenchmarkRunner(string header = null)
     {
@@ -50,7 +50,7 @@ namespace Anixe.QualityTools.Benchmark
       if (args?.Length > 0 && args[0] == "all")
       {
         args[0] = "--menu-select=BenchmarkDotNet.All tests";
-        RunBenchmarkDotNetTests(args);
+        RunBenchmarkDotNetTests(args, config);
         return;
       }
       
@@ -58,11 +58,10 @@ namespace Anixe.QualityTools.Benchmark
 #endif
     }
 
-    private void RunBenchmarkDotNetTests(string[] args, IConfig config = null)
+    private void RunBenchmarkDotNetTests(string[] args, IConfig config)
     {
       var benchmarkClasses = FindClassesWithMethodAttribute();
       config = config ?? DefaultConfig;
-      config = config.With(Job.Core.With(new[] { new EnvironmentVariable("BENCHMARK", "1") }));
 
       var menu = new ConsoleMenu(args, level: 1);
       menu.Add("All tests", () =>
