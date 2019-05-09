@@ -2,15 +2,12 @@
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
-using BenchmarkDotNet.Exporters.Json;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Validators;
 using ConsoleTools;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -18,9 +15,25 @@ namespace Anixe.QualityTools.Benchmark
 {
   public class BenchmarkRunner
   {
-    private static readonly string PerfResultsDirectory = Path.Combine("..", "..", "PerfResults");
-    private static readonly string ResultsDirectory = Path.Combine(PerfResultsDirectory, "results");
     private readonly string header;
+
+    public static IConfig DefaultConfig { get; } = ManualConfig.CreateEmpty()
+      .With(DefaultColumnProviders.Instance)
+      .With(ConsoleLogger.Default)
+      .With(MemoryDiagnoser.Default)
+      .With(EnvironmentAnalyser.Default,
+            OutliersAnalyser.Default,
+            MinIterationTimeAnalyser.Default,
+            MultimodalDistributionAnalyzer.Default,
+            RuntimeErrorAnalyser.Default)
+      .With(BaselineValidator.FailOnError,
+            SetupCleanupValidator.FailOnError,
+            JitOptimizationsValidator.FailOnError,
+            RunModeValidator.FailOnError)
+      .With(Job.Core.With(new GcMode()
+      {
+        Force = false // tell BenchmarkDotNet not to force GC collections after every iteration
+      }));
 
     public BenchmarkRunner(string header = null)
     {
@@ -40,40 +53,22 @@ namespace Anixe.QualityTools.Benchmark
         RunBenchmarkDotNetTests(args);
         return;
       }
-
-      Directory.CreateDirectory(ResultsDirectory);
-      RunBenchmarkDotNetTests(args, AfterTestAction, config);
+      
+      RunBenchmarkDotNetTests(args, config);
 #endif
     }
 
-    private void RunBenchmarkDotNetTests(string[] args, Action afterTestAction = null, IConfig config = null)
+    private void RunBenchmarkDotNetTests(string[] args, IConfig config = null)
     {
       var benchmarkClasses = FindClassesWithMethodAttribute();
-      config = config ?? ManualConfig.CreateEmpty().WithArtifactsPath(PerfResultsDirectory)
-                    .With(DefaultColumnProviders.Instance)
-                    .With(new JsonExporter(DateTime.Now.ToString("-yyyyMMddTHHmmss"), true, true))
-                    .With(ConsoleLogger.Default)
-                    .With(MemoryDiagnoser.Default)
-                    .With(EnvironmentAnalyser.Default,
-                          OutliersAnalyser.Default,
-                          MinIterationTimeAnalyser.Default,
-                          MultimodalDistributionAnalyzer.Default,
-                          RuntimeErrorAnalyser.Default)
-                    .With(BaselineValidator.FailOnError,
-                          SetupCleanupValidator.FailOnError,
-                          JitOptimizationsValidator.FailOnError,
-                          RunModeValidator.FailOnError)
-                    .With(Job.Core.With(new GcMode()
-                    {
-                      Force = false // tell BenchmarkDotNet not to force GC collections after every iteration
-                    }).With(new[] { new EnvironmentVariable("BENCHMARK", "1") }));
+      config = config ?? DefaultConfig;
+      config = config.With(Job.Core.With(new[] { new EnvironmentVariable("BENCHMARK", "1") }));
 
       var menu = new ConsoleMenu(args, level: 1);
       menu.Add("All tests", () =>
       {
         var benchmarks = benchmarkClasses.Select(c => BenchmarkConverter.TypeToBenchmarks(c, config)).ToArray();
-        BenchmarkDotNet.Running.BenchmarkRunner.Run(benchmarks, config);
-        afterTestAction?.Invoke();
+        BenchmarkDotNet.Running.BenchmarkRunner.Run(benchmarks);
         Environment.Exit(0);
       });
       foreach (var benchmarkClass in benchmarkClasses)
@@ -81,7 +76,6 @@ namespace Anixe.QualityTools.Benchmark
         menu.Add(benchmarkClass.Name, () =>
         {
           BenchmarkDotNet.Running.BenchmarkRunner.Run(benchmarkClass, config);
-          afterTestAction?.Invoke();
           Environment.Exit(0);
         });
       }
@@ -90,38 +84,22 @@ namespace Anixe.QualityTools.Benchmark
       menu.Show();
     }
 
-    private static void GenerateAnalyzeFile()
-    {
-      try
-      {
-        var data = BenchmarkDataLoader.LoadDataIntoTable(ResultsDirectory);
-        var excelPackage = AnalyzeFileGenerator.GenerateExcelAnalyzeFile(ResultsDirectory, data);
-        string path = Path.GetFullPath(Path.Combine(PerfResultsDirectory, "analyse.xlsx"));
-        excelPackage.SaveAs(new FileInfo(path));
-        Console.WriteLine($"Analyse saved into `{path}`");
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex);
-      }
-    }
-
-    private static void AfterTestAction()
-    {
-      GenerateAnalyzeFile();
-    }
-
     private static Type[] FindClassesWithMethodAttribute()
     {
       return Assembly.GetEntryAssembly().GetTypes()
-              .Where(t => SelectBenchmarkMethods(t).Any())
+              .Where(HasAnyBenchmarkMethod)
               .OrderBy(c => c.Name)
               .ToArray();
     }
 
-    private static IEnumerable<MethodInfo> SelectBenchmarkMethods(Type benchmarkClass)
+    private static bool HasAnyBenchmarkMethod(Type t)
     {
-      return benchmarkClass.GetMethods().Where(m => m.GetCustomAttributes(typeof(BenchmarkDotNet.Attributes.BenchmarkAttribute), false).Length > 0);
+      return Array.Exists(t.GetMethods(), HasBenchmarkAttribute);
+    }
+
+    private static bool HasBenchmarkAttribute(MethodInfo m)
+    {
+      return m.GetCustomAttributes(typeof(BenchmarkDotNet.Attributes.BenchmarkAttribute), false).Length > 0;
     }
   }
 }
