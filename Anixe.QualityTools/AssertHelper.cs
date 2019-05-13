@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Anixe.QualityTools
 {
-    public class AssertHelper
+    public static class AssertHelper
     {
         public static void AreXmlDocumentsEqual(string expected, string actual)
         {
@@ -33,15 +33,6 @@ namespace Anixe.QualityTools
                   .AppendLine(actualXml.ToString());
 
                 throw new Xunit.Sdk.XunitException(sb.ToString());
-            }
-        }
-
-        private static XDocument Load(string text)
-        {
-            using (var reader = XmlReader.Create(new StringReader(text), new XmlReaderSettings { ConformanceLevel = ConformanceLevel.Fragment }))
-            {
-                reader.MoveToContent();
-                return XDocument.Load(reader);
             }
         }
 
