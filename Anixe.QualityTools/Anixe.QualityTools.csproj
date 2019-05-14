@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>Additional tools for testing software</Description>
     <AssemblyTitle>Anixe.QualityTools</AssemblyTitle>
-    <VersionPrefix>1.2.1</VersionPrefix>
+    <VersionPrefix>1.2.2</VersionPrefix>
     <Authors>wm</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>

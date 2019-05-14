@@ -40,8 +40,13 @@ IConfig config = ManualConfig.Create(DefaultConfig.Instance)
 
 # Changelog
 
+1.2.2
+* Add p field to graylog export
+
+
 1.2.1
 * Fix cannot use custom config in BenchmarkRunner in "all" mode
+
 1.2.0
 * Added GraylogExporter
 * Removed Excel analyse file generating after run BenchmarkRunner

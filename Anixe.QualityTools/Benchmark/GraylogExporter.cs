@@ -18,6 +18,7 @@ namespace Anixe.QualityTools.Benchmark
     private readonly UdpClient udpClient;
     private readonly string env;
     private readonly string platform;
+    private readonly string product;
 
     /// <summary>Use this property to set `host` property with custom value. Default is `Dns.GetHostName()`</summary>
     public string HostName = Dns.GetHostName();
@@ -27,15 +28,16 @@ namespace Anixe.QualityTools.Benchmark
 
     public string Name => nameof(GraylogExporter);
 
-    public GraylogExporter(string platform, UdpClient udpClient)
+    public GraylogExporter(string product, string platform, UdpClient udpClient)
     {
       this.udpClient = udpClient;
       this.env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "development";
       this.platform = platform;
+      this.product = product;
     }
 
-    public GraylogExporter(string platform, string host, int port)
-    : this(platform, new UdpClient(host, port))
+    public GraylogExporter(string product, string platform, string host, int port)
+    : this(product, platform, new UdpClient(host, port))
     { }
 
     public IEnumerable<string> ExportToFiles(Summary summary, ILogger consoleLogger)
@@ -65,6 +67,7 @@ namespace Anixe.QualityTools.Benchmark
               { "_total_operations", r.GcStats.TotalOperations },
               { "_env", this.env },
               { "_platform", this.platform },
+              { "_p", this.product },
               { "_facility", "benchmark" },
             };
 
