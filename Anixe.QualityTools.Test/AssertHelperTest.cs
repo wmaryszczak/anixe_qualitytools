@@ -2,34 +2,34 @@ using Xunit;
 
 namespace Anixe.QualityTools.Test
 {
-    public class AssertHelperTest
+  public class AssertHelperTest
+  {
+    [Fact]
+    public void It_DoesNothing_When_JsonsAreSemanticallyEqual_Empty()
     {
-        [Fact]
-        public void It_DoesNothing_When_JsonsAreSemanticallyEqual_Empty()
-        {
-            var a = "{}";
-            var b = "{}";
+      var a = "{}";
+      var b = "{}";
 
-            var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(a, b));
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(a, b));
 
-            Assert.Null(ex);
-        }
+      Assert.Null(ex);
+    }
 
-        [Fact]
-        public void It_DoesNothing_When_JsonsAreSemanticallyEqual_NoNested()
-        {
-            var a = @"{ ""a"": 1,    ""b"": ""foo"" }";
-            var b = @"{""b"": ""foo"", ""a"": 1 }";
+    [Fact]
+    public void It_DoesNothing_When_JsonsAreSemanticallyEqual_NoNested()
+    {
+      var a = @"{ ""a"": 1,    ""b"": ""foo"" }";
+      var b = @"{""b"": ""foo"", ""a"": 1 }";
 
-            var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(a, b));
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(a, b));
 
-            Assert.Null(ex);
-        }
+      Assert.Null(ex);
+    }
 
-        [Fact]
-        public void It_DoesNothing_When_JsonsAreSemanticallyEqual()
-        {
-            var a = @"
+    [Fact]
+    public void It_DoesNothing_When_JsonsAreSemanticallyEqual()
+    {
+      var a = @"
                 {
                     ""str"": ""bar"",
                     ""num"": 12.90,
@@ -52,7 +52,7 @@ namespace Anixe.QualityTools.Test
                 }
             ";
 
-            var b = @"
+      var b = @"
                 {
                     ""num"": 12.90,
                     ""obj"": {
@@ -75,31 +75,31 @@ namespace Anixe.QualityTools.Test
                 }
             ";
 
-            var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(a, b));
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(a, b));
 
-            Assert.Null(ex);
-        }
+      Assert.Null(ex);
+    }
 
-        [Fact]
-        public void It_Fails_When_JsonArraySequenceIsDifferent()
-        {
-            var a = @"
+    [Fact]
+    public void It_Fails_When_JsonArraySequenceIsDifferent()
+    {
+      var a = @"
                 {
                     ""arr"": [1, 2, 3]
                 }
             ";
 
-            var b = @"
+      var b = @"
                 {
                     ""arr"": [3, 2, 1]
                 }
             ";
 
-            var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(a, b));
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(a, b));
 
-            Assert.NotNull(ex);
+      Assert.NotNull(ex);
 
-            Assert.Equal(
+      Assert.Equal(
 @"################### expected:
 {
   ""arr"": [
@@ -124,28 +124,28 @@ Expected: 1
 Actual:   3
           ↑ (pos 0)
 ", ex.Message, ignoreLineEndingDifferences: true);
-        }
+    }
 
-        [Fact]
-        public void It_Fails_When_MissingProperty()
-        {
-            var a = @"
+    [Fact]
+    public void It_Fails_When_MissingProperty()
+    {
+      var a = @"
                 {
                     ""arr"": [{""a"": 1}]
                 }
             ";
 
-            var b = @"
+      var b = @"
                 {
                     ""arr"": [{""a"": 1, ""b"": 2}]
                 }
             ";
 
-            var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(a, b));
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(a, b));
 
-            Assert.NotNull(ex);
+      Assert.NotNull(ex);
 
-            Assert.Equal(
+      Assert.Equal(
 @"################### expected:
 {
   ""arr"": [
@@ -172,28 +172,28 @@ Actual:   3
   ""b"": 2
 }
 ", ex.Message, ignoreLineEndingDifferences: true);
-        }
+    }
 
-      [Fact]
-      public void It_Fails_WhenDifferentValuesForSameKey()
-      {
-        var a = @"
+    [Fact]
+    public void It_Fails_WhenDifferentValuesForSameKey()
+    {
+      var a = @"
                 {
                     ""a"": {}
                 }
             ";
 
-            var b = @"
+      var b = @"
                 {
                     ""a"": 2
                 }
             ";
 
-            var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(a, b));
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(a, b));
 
-            Assert.NotNull(ex);
+      Assert.NotNull(ex);
 
-            Assert.Equal(
+      Assert.Equal(
 @"################### expected:
 {
   ""a"": {}
@@ -206,7 +206,6 @@ Actual:   3
 
 Token of path 'a' and type Object is different from 'a' of type Integer
 ", ex.Message, ignoreLineEndingDifferences: true);
-      }
     }
-
+  }
 }

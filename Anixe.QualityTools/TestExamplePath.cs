@@ -2,13 +2,42 @@ using System;
 using System.IO;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Anixe.QualityTools
 {
 
   public class TestExamplePath
   {
-    private readonly static string rootPath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..");
+    private readonly static string rootPath = LoadProjectRootPath();
+
+    private static string LoadProjectRootPath()
+    {
+      var dir = GetBaseDir("*.csproj");
+      if (!string.IsNullOrEmpty(dir))
+      {
+        return dir;
+      }
+      throw new Exception($"Cannot find csproj dir");
+    }
+
+    private static string GetBaseDir(string proj)
+    {
+      var currDir = Environment.CurrentDirectory;
+      if (Directory.EnumerateFiles(currDir, proj).Any())
+      {
+        return currDir;
+      }
+      while (Directory.GetParent(currDir) != null && !Directory.EnumerateFiles(currDir, proj).Any())
+      {
+        currDir = Directory.GetParent(currDir).FullName;
+      }
+      return currDir;
+    }
+
+
     private readonly string examplesPath;
 
     public TestExamplePath(string examplesDir = "Examples")
@@ -22,7 +51,15 @@ namespace Anixe.QualityTools
       var dir = new DirectoryInfo(exampleDirPath);
       var projectDir = dir.Parent.Name;
       var testCasePath = Path.Combine(testCase.FullName.Replace(projectDir + ".", string.Empty).Split('.'));
+      // var examplePath = Path.Combine(exampleDirPath, testCasePath + (suffix ?? string.Empty) + "." + ext);
+
+
       var examplePath = Path.Combine(exampleDirPath, testCasePath + (suffix ?? string.Empty) + "." + ext);
+      if (!File.Exists(examplePath))
+      {
+        examplePath = Path.Combine(exampleDirPath, testCasePath, (suffix ?? string.Empty) + "." + ext);
+      }
+
       return examplePath;
     }  
     
@@ -40,19 +77,19 @@ namespace Anixe.QualityTools
 
     public static byte[] ReadAllBytes(Type testCase, string ext = "xml", string suffix = null)
     {
-      var examplePath = path.GetPath(testCase, ext, suffix);
+      var examplePath = GetExamplePath(testCase, ext, suffix);
       return exampleFilesCache.GetOrAdd(examplePath, LoadAsByteArray);     
     }  
 
     public static string[] ReadAllLines(Type testCase, string ext = "xml", string suffix = null)
     {
-      var examplePath = path.GetPath(testCase, ext, suffix);
+      var examplePath = GetExamplePath(testCase, ext, suffix);
       return File.ReadAllLines(examplePath);
     }  
 
     public static IEnumerable<string> ReadLines(Type testCase, string ext = "xml", string suffix = null)
     {
-      var examplePath = path.GetPath(testCase, ext, suffix);
+      var examplePath = GetExamplePath(testCase, ext, suffix);
       return File.ReadLines(examplePath);
     }  
 
@@ -92,6 +129,19 @@ namespace Anixe.QualityTools
     public static string LoadPayload(Type testCase, string ext = "xml")
     {
       return ReadAllText(testCase, ext, "_Payload");
+    }
+
+    public static string LoadTestFixture(Type testFixture, string ext = "xml", [CallerMemberName] string callerName = "")
+    {
+      var frame = new StackFrame(1, true);
+      Console.WriteLine(frame.GetMethod().DeclaringType.Name);
+      return ReadAllText(testFixture, ext, callerName);
+    }
+
+    public static string LoadTestFixture(string ext = "xml", [CallerMemberName] string callerName = "")
+    {
+      var frame = new StackFrame(1, true);
+      return ReadAllText(frame.GetMethod().DeclaringType, ext, callerName);
     }
 
     private static byte[] LoadAsByteArray(string path)
