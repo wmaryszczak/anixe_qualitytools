@@ -15,7 +15,11 @@ Contains methods to compare XML files, JSON files and collections.
 
 ## TestExamplePath
 
+The class provide path to test project root directory regardless test framework and test executor (Visual Studio test explorer, vscode, dotnet cli)
+
 ## TestExample
+
+Implementes the convention of loading test examples based on namespace of test class and test method.
 
 ## BenchmarkRunner
 
@@ -39,6 +43,9 @@ IConfig config = ManualConfig.Create(DefaultConfig.Instance)
 ```
 
 # Changelog
+
+1.2.3-1.2.4
+* Add LoadTestFixture based on reflection for parameterless loading examples
 
 1.2.2
 * Add p field to graylog export

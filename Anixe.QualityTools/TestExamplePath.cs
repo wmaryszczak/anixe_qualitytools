@@ -51,23 +51,18 @@ namespace Anixe.QualityTools
       var dir = new DirectoryInfo(exampleDirPath);
       var projectDir = dir.Parent.Name;
       var testCasePath = Path.Combine(testCase.FullName.Replace(projectDir + ".", string.Empty).Split('.'));
-      // var examplePath = Path.Combine(exampleDirPath, testCasePath + (suffix ?? string.Empty) + "." + ext);
-
-
       var examplePath = Path.Combine(exampleDirPath, testCasePath + (suffix ?? string.Empty) + "." + ext);
       if (!File.Exists(examplePath))
       {
         examplePath = Path.Combine(exampleDirPath, testCasePath, (suffix ?? string.Empty) + "." + ext);
       }
-
       return examplePath;
     }  
     
     public string GetExamplesDirPath()
     {
       return examplesPath;    
-    }
-    
+    }    
   }
 
   public static class TestExample
@@ -133,15 +128,18 @@ namespace Anixe.QualityTools
 
     public static string LoadTestFixture(Type testFixture, string ext = "xml", [CallerMemberName] string callerName = "")
     {
-      var frame = new StackFrame(1, true);
-      Console.WriteLine(frame.GetMethod().DeclaringType.Name);
       return ReadAllText(testFixture, ext, callerName);
     }
 
     public static string LoadTestFixture(string ext = "xml", [CallerMemberName] string callerName = "")
     {
       var frame = new StackFrame(1, true);
-      return ReadAllText(frame.GetMethod().DeclaringType, ext, callerName);
+      var t = frame.GetMethod().DeclaringType;
+      if(t.GetInterfaces().Contains(typeof(IAsyncStateMachine)))
+      {
+        t = t.DeclaringType;
+      }
+      return ReadAllText(t, ext, callerName);
     }
 
     private static byte[] LoadAsByteArray(string path)
