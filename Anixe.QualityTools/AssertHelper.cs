@@ -5,8 +5,9 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using FluentAssertions;
-using Newtonsoft.Json;
+using FluentAssertions.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Anixe.QualityTools
@@ -38,28 +39,9 @@ namespace Anixe.QualityTools
 
         public static void AreJsonObjectsEqual(string expected, string actual)
         {
-            var expectedObject = JsonConvert.DeserializeObject<JToken>(expected);
-            var actualObject = JsonConvert.DeserializeObject<JToken>(actual);
-            try
-            {
-                if (!JToken.DeepEquals(expected, actual))
-                {
-                    Xunit.Assert.Equal(expectedObject.ToString(), actualObject.ToString());
-                }
-            }
-            catch (Xunit.Sdk.XunitException ex)
-            {
-                var sb = new StringBuilder()
-                  .AppendLine("################### expected:")
-                  .AppendLine(JsonConvert.SerializeObject(expectedObject, Newtonsoft.Json.Formatting.Indented))
-                  .AppendLine()
-                  .AppendLine("################### actual:")
-                  .AppendLine(JsonConvert.SerializeObject(actualObject, Newtonsoft.Json.Formatting.Indented))
-                  .AppendLine()
-                  .AppendLine(ex.Message);
-
-                throw new Xunit.Sdk.XunitException(sb.ToString());
-            }
+            var actualObject = JToken.Parse(actual);
+            var expectedObject = JToken.Parse(expected);
+            actualObject.Should().BeEquivalentTo(expectedObject);
         }
 
         public static void AreJsonObjectsSemanticallyEqual(string expected, string actual)

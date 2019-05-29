@@ -5,6 +5,24 @@ namespace Anixe.QualityTools.Test
   public class AssertHelperTest
   {
     [Fact]
+    public void AreJsonObjectsEqual_Should_Fail_Assertion_If_Objects_Are_Different()
+    {
+      var a = "{\"x\":\"x\",  \"y\": \"y\"}";
+      var b = "{\"y\": \"y\", \"x\":\"x2\"}";
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsEqual(a, b));
+      Assert.NotNull(ex);
+    }
+
+    [Fact]
+    public void AreJsonObjectsEqual_Should_Compare_Ignoring_Properties_Order()
+    {
+      var a = "{\"x\":\"x\",  \"y\": \"y\"}";
+      var b = "{\"y\": \"y\", \"x\":\"x\"}";
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsEqual(a, b));
+      Assert.Null(ex);
+    }
+
+    [Fact]
     public void It_DoesNothing_When_JsonsAreSemanticallyEqual_Empty()
     {
       var a = "{}";
