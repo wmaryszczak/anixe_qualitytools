@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>Additional tools for testing software</Description>
     <AssemblyTitle>Anixe.QualityTools</AssemblyTitle>
-    <VersionPrefix>1.2.5</VersionPrefix>
+    <VersionPrefix>1.2.6</VersionPrefix>
     <Authors>wm</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>
@@ -23,6 +23,5 @@
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="FluentAssertions" Version="5.6.0" />
     <PackageReference Include="FluentAssertions.Json" Version="5.0.0" />
-    <PackageReference Include="EPPlus" Version="4.5.3.1" />
   </ItemGroup>
 </Project>
