@@ -57,40 +57,40 @@ namespace Anixe.QualityTools
         examplePath = Path.Combine(exampleDirPath, testCasePath, (suffix ?? string.Empty) + "." + ext);
       }
       return examplePath;
-    }  
-    
+    }
+
     public string GetExamplesDirPath()
     {
-      return examplesPath;    
-    }    
+      return examplesPath;
+    }
   }
 
   public static class TestExample
   {
-    private readonly static ConcurrentDictionary<string, byte[]> exampleFilesCache = new ConcurrentDictionary<string, byte[]>();  
+    private readonly static ConcurrentDictionary<string, byte[]> exampleFilesCache = new ConcurrentDictionary<string, byte[]>();
     private readonly static TestExamplePath path = new TestExamplePath();
 
     public static byte[] ReadAllBytes(Type testCase, string ext = "xml", string suffix = null)
     {
       var examplePath = GetExamplePath(testCase, ext, suffix);
-      return exampleFilesCache.GetOrAdd(examplePath, LoadAsByteArray);     
-    }  
+      return exampleFilesCache.GetOrAdd(examplePath, LoadAsByteArray);
+    }
 
     public static string[] ReadAllLines(Type testCase, string ext = "xml", string suffix = null)
     {
       var examplePath = GetExamplePath(testCase, ext, suffix);
       return File.ReadAllLines(examplePath);
-    }  
+    }
 
     public static IEnumerable<string> ReadLines(Type testCase, string ext = "xml", string suffix = null)
     {
       var examplePath = GetExamplePath(testCase, ext, suffix);
       return File.ReadLines(examplePath);
-    }  
+    }
 
     public static string ReadAllText(Type testCase, string ext = "xml", string suffix = null)
     {
-      using(var reader = OpenText(testCase, ext, suffix))
+      using (var reader = OpenText(testCase, ext, suffix))
       {
         return reader.ReadToEnd();
       }
@@ -105,7 +105,7 @@ namespace Anixe.QualityTools
     {
       return new StreamReader(OpenRead(testCase, ext, suffix));
     }
-    
+
     public static string GetExamplesDirPath()
     {
       return path.GetExamplesDirPath();
@@ -135,11 +135,23 @@ namespace Anixe.QualityTools
     {
       var frame = new StackFrame(1, true);
       var t = frame.GetMethod().DeclaringType;
-      if(t.GetInterfaces().Contains(typeof(IAsyncStateMachine)))
+      if (t.GetInterfaces().Contains(typeof(IAsyncStateMachine)))
       {
         t = t.DeclaringType;
       }
       return ReadAllText(t, ext, callerName);
+    }
+
+    public static string GetTestFixturePath(string ext = "xml", [CallerMemberName] string callerName = "")
+    {
+      var frame = new StackFrame(1, true);
+      var t = frame.GetMethod().DeclaringType;
+      if (t.GetInterfaces().Contains(typeof(IAsyncStateMachine)))
+      {
+        t = t.DeclaringType;
+      }
+      var examplePath = GetExamplePath(t, ext, callerName);
+      return examplePath;
     }
 
     private static byte[] LoadAsByteArray(string path)
