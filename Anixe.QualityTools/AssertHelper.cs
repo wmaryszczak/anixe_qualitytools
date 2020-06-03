@@ -5,7 +5,6 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using FluentAssertions;
-using FluentAssertions.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using Xunit;
@@ -68,7 +67,7 @@ namespace Anixe.QualityTools
             }
         }
 
-        public static void AssertCollection<T>(List<T> expected, List<T> actual, Action<T, T> assertItem)
+        public static void AssertCollection<T>(List<T>? expected, List<T> actual, Action<T, T> assertItem)
         {
             if (expected == null)
             {
@@ -95,8 +94,8 @@ namespace Anixe.QualityTools
             switch (left.Type)
             {
                 case(JTokenType.Object):
-                    var leftObject = (left as JObject);
-                    var rightObject = (right as JObject);
+                    var leftObject = (JObject)left;
+                    var rightObject = (JObject)right;
 
                     if (leftObject.Count != rightObject.Count)
                     {
@@ -105,11 +104,14 @@ namespace Anixe.QualityTools
 
                     foreach (var leftObjectItem in leftObject)
                     {
-                        JToken rightObjectItem;
+                        JToken? rightObjectItem;
 
                         if (rightObject.TryGetValue(leftObjectItem.Key, out rightObjectItem))
                         {
-                            SemanticallyEqual(leftObjectItem.Value, rightObjectItem);
+                            if (leftObjectItem.Value != null && rightObjectItem != null)
+                            {
+                                SemanticallyEqual(leftObjectItem.Value, rightObjectItem);
+                            }
                         }
                         else
                         {
@@ -119,8 +121,8 @@ namespace Anixe.QualityTools
 
                     break;
                 case(JTokenType.Array):
-                    var leftChildren = (left as JArray);
-                    var rightChildren = (right as JArray);
+                    var leftChildren = (JArray)left;
+                    var rightChildren = (JArray)right;
 
                     if (leftChildren.Count != rightChildren.Count)
                     {

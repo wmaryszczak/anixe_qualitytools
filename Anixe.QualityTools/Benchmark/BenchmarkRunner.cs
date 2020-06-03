@@ -15,33 +15,33 @@ namespace Anixe.QualityTools.Benchmark
 {
   public class BenchmarkRunner
   {
-    private readonly string header;
+    private readonly string? header;
 
     public static IConfig DefaultConfig { get; } = ManualConfig.CreateEmpty()
-      .With(DefaultColumnProviders.Instance)
-      .With(ConsoleLogger.Default)
-      .With(MemoryDiagnoser.Default)
-      .With(EnvironmentAnalyser.Default,
+      .AddColumnProvider(DefaultColumnProviders.Instance)
+      .AddLogger(ConsoleLogger.Default)
+      .AddDiagnoser(MemoryDiagnoser.Default)
+      .AddAnalyser(EnvironmentAnalyser.Default,
             OutliersAnalyser.Default,
             MinIterationTimeAnalyser.Default,
             MultimodalDistributionAnalyzer.Default,
             RuntimeErrorAnalyser.Default)
-      .With(BaselineValidator.FailOnError,
+      .AddValidator(BaselineValidator.FailOnError,
             SetupCleanupValidator.FailOnError,
             JitOptimizationsValidator.FailOnError,
             RunModeValidator.FailOnError)
-      .With(Job.Core.With(new GcMode()
+      .AddJob(Job.Default.WithGcMode(new GcMode()
       {
         Force = false // tell BenchmarkDotNet not to force GC collections after every iteration
-      }).With(new[] { new EnvironmentVariable("BENCHMARK", "1") }));
+      }).WithEnvironmentVariables(new[] { new EnvironmentVariable("BENCHMARK", "1") }));
 
-    public BenchmarkRunner(string header = null)
+    public BenchmarkRunner(string? header = null)
     {
       this.header = header;
     }
 
     /// <summary>Run console application with set environment variable BENCHMARK=1</summary>
-    public void Run(string[] args, IConfig config = null)
+    public void Run(string[]? args, IConfig? config = null)
     {
 #if DEBUG
       Console.WriteLine("You are trying to run performance tests using DEBUG mode. Use `dotnet run -c Release`");
@@ -54,11 +54,11 @@ namespace Anixe.QualityTools.Benchmark
         return;
       }
       
-      RunBenchmarkDotNetTests(args, config);
+      RunBenchmarkDotNetTests(args ?? Array.Empty<string>(), config);
 #endif
     }
 
-    private void RunBenchmarkDotNetTests(string[] args, IConfig config)
+    private void RunBenchmarkDotNetTests(string[] args, IConfig? config)
     {
       var benchmarkClasses = FindClassesWithMethodAttribute();
       config = config ?? DefaultConfig;

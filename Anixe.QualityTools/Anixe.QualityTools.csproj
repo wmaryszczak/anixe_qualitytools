@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>Additional tools for testing software</Description>
     <AssemblyTitle>Anixe.QualityTools</AssemblyTitle>
-    <VersionPrefix>1.2.9</VersionPrefix>
+    <VersionPrefix>1.2.10</VersionPrefix>
     <Authors>wm</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>
@@ -12,16 +12,15 @@
     <PackageProjectUrl>https://github.com/wmaryszczak/anixe_qualitytools</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/wmaryszczak/anixe_qualitytools</RepositoryUrl>
-  </PropertyGroup>
-  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.11.5" />
-    <PackageReference Include="ConsoleMenu-simple" Version="2.4.0" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.12.*" />
+    <PackageReference Include="ConsoleMenu-simple" Version="2.4.*" />
     <PackageReference Include="Newtonsoft.Json" Version="12.*" />
     <PackageReference Include="xunit" Version="2.*" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
-    <PackageReference Include="FluentAssertions.Json" Version="5.5.0" />
   </ItemGroup>
 </Project>
