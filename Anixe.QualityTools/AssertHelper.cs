@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using System.Xml;
 using System.Xml.Linq;
 using FluentAssertions;
+using FluentAssertions.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using Xunit;
 
 namespace Anixe.QualityTools
 {
-    public static class AssertHelper
+  public static class AssertHelper
     {
         public static void AreXmlDocumentsEqual(string expected, string actual)
         {
