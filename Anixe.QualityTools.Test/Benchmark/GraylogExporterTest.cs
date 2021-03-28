@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using Xunit;
 using Anixe.QualityTools.Benchmark;
@@ -24,6 +23,10 @@ namespace Anixe.QualityTools.Test.Benchmark
     {
       private readonly StringBuilder output;
 
+      public string Id => nameof(SimpleConsoleLogger);
+
+      public int Priority => 0;
+
       public SimpleConsoleLogger(StringBuilder output)
       {
         this.output = output;
@@ -31,7 +34,7 @@ namespace Anixe.QualityTools.Test.Benchmark
 
       public void Write(LogKind logKind, string text)
       {
-        output.Append(text);
+        this.output.Append(text);
       }
 
       public void Flush() { }
