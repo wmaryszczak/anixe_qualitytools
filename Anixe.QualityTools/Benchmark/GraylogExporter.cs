@@ -54,23 +54,39 @@ namespace Anixe.QualityTools.Benchmark
         {
           try
           {
-            var log = new Dictionary<string, object>
+            Dictionary<string, object> log;
+            if (r.Success)
             {
-              { "short_message", r.BenchmarkCase.DisplayInfo },
-              { "host", this.HostName },
-              { "_time_taken_median_ns", r.ResultStatistics.Median },
-              { "_time_taken_mean_ns", r.ResultStatistics.Mean },
-              { "_bytes_allocated", r.GcStats.BytesAllocatedPerOperation },
-              { "_gen0_collections", r.GcStats.Gen0Collections },
-              { "_gen1_collections", r.GcStats.Gen1Collections },
-              { "_gen2_collections", r.GcStats.Gen2Collections },
-              { "_total_operations", r.GcStats.TotalOperations },
-              { "_env", this.env },
-              { "_platform", this.platform },
-              { "_p", this.product },
-              { "_facility", "benchmark" },
-            };
-
+              log = new Dictionary<string, object>
+              {
+                { "short_message", r.BenchmarkCase.DisplayInfo },
+                { "host", this.HostName },
+                { "_time_taken_median_ns", r.ResultStatistics.Median },
+                { "_time_taken_mean_ns", r.ResultStatistics.Mean },
+                { "_bytes_allocated", r.GcStats.BytesAllocatedPerOperation },
+                { "_gen0_collections", r.GcStats.Gen0Collections },
+                { "_gen1_collections", r.GcStats.Gen1Collections },
+                { "_gen2_collections", r.GcStats.Gen2Collections },
+                { "_total_operations", r.GcStats.TotalOperations },
+                { "_env", this.env },
+                { "_platform", this.platform },
+                { "_p", this.product },
+                { "_facility", "benchmark" },
+              };
+            }
+            else
+            {
+              log = new Dictionary<string, object>
+              {
+                { "short_message", $"Benchmark test {r.BenchmarkCase.DisplayInfo} failed" },
+                { "host", this.HostName },
+                { "_process_id", this.platform },
+                { "_application_name", "ERR" },
+                { "_env", this.env },
+                { "_src", "benchmark" },
+                { "_p", this.product },
+              };
+            }
             var inputString = JsonConvert.SerializeObject(log);
             logger?.WriteLine(inputString);
 
@@ -83,6 +99,21 @@ namespace Anixe.QualityTools.Benchmark
           catch (Exception ex)
           {
             logger?.WriteLine(LogKind.Error, ex.ToString());
+
+            var log = new Dictionary<string, object>
+            {
+              { "short_message", ex.Message },
+              { "host", this.HostName },
+              { "_process_id", this.platform },
+              { "_application_name", "ERR" },
+              { "_env", this.env },
+              { "_src", "benchmark" },
+              { "_p", this.product },
+              { "_t", ex.GetType().Name },
+            };
+
+            var inputString = JsonConvert.SerializeObject(log);
+            logger?.WriteLine(inputString);
           }
         }
       }
