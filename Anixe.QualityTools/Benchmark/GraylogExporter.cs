@@ -25,6 +25,7 @@ namespace Anixe.QualityTools.Benchmark
 
     /// <summary>If Enabled is set false then no udp request will be sent but only console log displayed</summary>
     public bool Enabled = true;
+    private Action onErrorAction = () => { };
 
     public string Name => nameof(GraylogExporter);
 
@@ -39,6 +40,12 @@ namespace Anixe.QualityTools.Benchmark
     public GraylogExporter(string product, string platform, string host, int port)
     : this(product, platform, new UdpClient(host, port))
     { }
+
+    public GraylogExporter OnError(Action action)
+    {
+      this.onErrorAction = action ?? throw new ArgumentNullException(nameof(action));
+      return this;
+    }
 
     public IEnumerable<string> ExportToFiles(Summary summary, ILogger consoleLogger)
     {
@@ -63,7 +70,7 @@ namespace Anixe.QualityTools.Benchmark
                 { "host", this.HostName },
                 { "_time_taken_median_ns", r.ResultStatistics.Median },
                 { "_time_taken_mean_ns", r.ResultStatistics.Mean },
-                { "_bytes_allocated", r.GcStats.BytesAllocatedPerOperation },
+                { "_bytes_allocated", r.GcStats.GetBytesAllocatedPerOperation(r.BenchmarkCase) },
                 { "_gen0_collections", r.GcStats.Gen0Collections },
                 { "_gen1_collections", r.GcStats.Gen1Collections },
                 { "_gen2_collections", r.GcStats.Gen2Collections },
@@ -98,6 +105,7 @@ namespace Anixe.QualityTools.Benchmark
           }
           catch (Exception ex)
           {
+            onErrorAction();
             logger?.WriteLine(LogKind.Error, ex.ToString());
 
             var log = new Dictionary<string, object>
