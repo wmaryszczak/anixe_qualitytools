@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>Additional tools for testing software</Description>
     <AssemblyTitle>Anixe.QualityTools</AssemblyTitle>
-    <VersionPrefix>1.2.12</VersionPrefix>
+    <VersionPrefix>1.3.0</VersionPrefix>
     <Authors>wm</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>
@@ -12,16 +12,21 @@
     <PackageProjectUrl>https://github.com/wmaryszczak/anixe_qualitytools</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/wmaryszczak/anixe_qualitytools</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.12.*" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
     <PackageReference Include="ConsoleMenu-simple" Version="2.4.*" />
-    <PackageReference Include="FluentAssertions.Json" Version="5.5.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.*" />
+    <PackageReference Include="FluentAssertions.Json" Version="6.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="xunit" Version="2.*" />
-    <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="FluentAssertions" Version="6.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 </Project>
