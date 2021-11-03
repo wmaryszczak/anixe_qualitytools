@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>Additional tools for testing software</Description>
     <AssemblyTitle>Anixe.QualityTools</AssemblyTitle>
-    <VersionPrefix>1.3.0</VersionPrefix>
+    <Version>1.3.1</Version>
     <Authors>wm</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>
@@ -23,7 +23,7 @@
     <PackageReference Include="FluentAssertions.Json" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="xunit" Version="2.*" />
-    <PackageReference Include="FluentAssertions" Version="6.1.0" />
+    <PackageReference Include="FluentAssertions" Version="6.2.0" />
   </ItemGroup>
 
   <ItemGroup>
