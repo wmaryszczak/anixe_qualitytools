@@ -22,7 +22,10 @@ namespace Anixe.QualityTools
             }
             catch (Xunit.Sdk.XunitException ex)
             {
-                var sb = new StringBuilder()
+                var expectedMsg = expectedXml.ToString();
+                var actualMsg = actualXml.ToString();
+
+                var sb = new StringBuilder(expectedMsg.Length + actualMsg.Length + ex.Message.Length + 70)
                   .AppendLine(ex.Message)
                   .AppendLine()
                   .AppendLine("################### expected:")
@@ -53,12 +56,15 @@ namespace Anixe.QualityTools
             }
             catch (Xunit.Sdk.XunitException ex)
             {
-                var sb = new StringBuilder()
+                var expectedMsg = JsonConvert.SerializeObject(expectedObject, Formatting.Indented);
+                var actualMsg = JsonConvert.SerializeObject(actualObject, Formatting.Indented);
+
+                var sb = new StringBuilder(expectedMsg.Length + actualMsg.Length + ex.Message.Length + 70)
                   .AppendLine("################### Expected:")
-                  .AppendLine(JsonConvert.SerializeObject(expectedObject, Newtonsoft.Json.Formatting.Indented))
+                  .AppendLine(expectedMsg)
                   .AppendLine()
                   .AppendLine("******************* Actual:")
-                  .AppendLine(JsonConvert.SerializeObject(actualObject, Newtonsoft.Json.Formatting.Indented))
+                  .AppendLine(actualMsg)
                   .AppendLine()
                   .AppendLine(ex.Message);
 
@@ -98,7 +104,7 @@ namespace Anixe.QualityTools
 
                     if (leftObject.Count != rightObject.Count)
                     {
-                        throw new Xunit.Sdk.XunitException($"Objects for path {left.Path} are different.{System.Environment.NewLine}Expected:{System.Environment.NewLine}{leftObject.ToString()}{System.Environment.NewLine}Actual:{System.Environment.NewLine}{rightObject.ToString()}");
+                        throw new Xunit.Sdk.XunitException($"Objects for path {left.Path} are different.{Environment.NewLine}Expected:{Environment.NewLine}{leftObject.ToString()}{Environment.NewLine}Actual:{Environment.NewLine}{rightObject.ToString()}");
                     }
 
                     foreach (var leftObjectItem in leftObject)
@@ -114,7 +120,7 @@ namespace Anixe.QualityTools
                         }
                         else
                         {
-                            throw new Xunit.Sdk.XunitException($"Property: '{leftObject.Path}.{leftObjectItem.Key}' is missing in actual object{System.Environment.NewLine}Expected:{System.Environment.NewLine}{leftObject.ToString()}{System.Environment.NewLine}Actual:{System.Environment.NewLine}{rightObject.ToString()}");
+                            throw new Xunit.Sdk.XunitException($"Property: '{leftObject.Path}.{leftObjectItem.Key}' is missing in actual object{Environment.NewLine}Expected:{Environment.NewLine}{leftObject.ToString()}{Environment.NewLine}Actual:{Environment.NewLine}{rightObject.ToString()}");
                         }
                     }
 
@@ -125,7 +131,7 @@ namespace Anixe.QualityTools
 
                     if (leftChildren.Count != rightChildren.Count)
                     {
-                        throw new Xunit.Sdk.XunitException($"Arrays for path {left.Path} have different length.{System.Environment.NewLine}Expected {left.ToString()}{System.Environment.NewLine}Actual:{System.Environment.NewLine}{right.ToString()}");
+                        throw new Xunit.Sdk.XunitException($"Arrays for path {left.Path} have different length.{Environment.NewLine}Expected {left.ToString()}{Environment.NewLine}Actual:{Environment.NewLine}{right.ToString()}");
                     }
 
                     for (int i = 0; i < leftChildren.Count; i++)
@@ -138,7 +144,7 @@ namespace Anixe.QualityTools
                 default: // non composite data structure found
                     if (!JToken.DeepEquals(left, right))
                     {
-                        throw new Xunit.Sdk.XunitException($"Values for path {left.Path} are different.{System.Environment.NewLine}Expected: {left.ToString()}{System.Environment.NewLine}Actual: {right.ToString()}");
+                        throw new Xunit.Sdk.XunitException($"Values for path {left.Path} are different.{Environment.NewLine}Expected: {left.ToString()}{Environment.NewLine}Actual: {right.ToString()}");
                     }
 
                     break;
