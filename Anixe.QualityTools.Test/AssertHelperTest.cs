@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Xunit;
 
 namespace Anixe.QualityTools.Test
@@ -351,6 +352,20 @@ Actual:
 
 Token of path 'a.b' of type Integer is different from 'a.b' of type Object
 ", ex.Message, ignoreLineEndingDifferences : true);
+    }
+
+    [Fact]
+    public void AreJsonObjectsSemanticallyEqual_WhenExcludePathIsGiven_ItDoesNotFail()
+    {
+      var a = @"{ ""a"": 1,    ""b"": ""foo_a"" }";
+      var b = @"{""b"": ""foo_b"", ""a"": 1 }";
+
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(
+        a,
+        b,
+        new List<string> { "b" }));
+
+      Assert.Null(ex);
     }
   }
 }
