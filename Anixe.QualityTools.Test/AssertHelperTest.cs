@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Xunit;
 
 namespace Anixe.QualityTools.Test
@@ -351,6 +352,149 @@ Actual:
 
 Token of path 'a.b' of type Integer is different from 'a.b' of type Object
 ", ex.Message, ignoreLineEndingDifferences : true);
+    }
+
+    [Fact]
+    public void AreJsonObjectsSemanticallyEqual_WhenSimplyPropExcludePathIsGiven_ItDoesNotFail()
+    {
+      var a = @"{ ""a"": 1,    ""b"": ""foo_a"" }";
+      var b = @"{""b"": ""foo_b"", ""a"": 1 }";
+
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(
+        a,
+        b,
+        new List<string> { "b" }));
+
+      Assert.Null(ex);
+    }
+
+    [Fact]
+    public void AreJsonObjectsSemanticallyEqual_WhenObjectExcludePathIsGiven_ItDoesNotFail()
+    {
+      var a = @"
+                {
+                    ""a"": {
+                      ""b"": 1
+                    }
+                }
+            ";
+
+      var b = @"
+                {
+                    ""a"": {
+                      ""b"": 2
+                    }
+                }
+            ";
+
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(
+        a,
+        b,
+        new List<string> { "a.b" }));
+
+      Assert.Null(ex);
+    }
+
+    [Fact]
+    public void AreJsonObjectsSemanticallyEqual_WhenArrayExcludePathIsGiven_ItDoesNotFail()
+    {
+      var a = @"
+                {
+                  ""a"": {
+                    ""b"": [
+                      { ""c"": 1 },
+                      { ""c"": 2 },
+                    ]
+                  }
+                }
+            ";
+
+      var b = @"
+                {
+                  ""a"": {
+                    ""b"": [
+                      { ""c"": 1 },
+                      { ""c"": 3 },
+                    ]
+                  }
+                }
+            ";
+
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(
+        a,
+        b,
+        new List<string> { "a.b[1]" }));
+
+      Assert.Null(ex);
+    }
+
+
+
+    [Fact]
+    public void AreJsonObjectsSemanticallyEqual_WhenArrayExcludePathIsGiven_ItFails()
+    {
+      var a = @"
+                {
+                  ""a"": {
+                    ""b"": [
+                      { ""c"": 1 },
+                      { ""c"": 2 },
+                    ]
+                  }
+                }
+            ";
+
+      var b = @"
+                {
+                  ""a"": {
+                    ""b"": [
+                      { ""c"": 1 },
+                      { ""c"": 3 },
+                    ]
+                  }
+                }
+            ";
+
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(
+        a,
+        b,
+        new List<string> { "a.b[0]" }));
+
+      Assert.NotNull(ex);
+
+      Assert.Equal(
+@"################### Expected:
+{
+  ""a"": {
+    ""b"": [
+      {
+        ""c"": 1
+      },
+      {
+        ""c"": 2
+      }
+    ]
+  }
+}
+
+******************* Actual:
+{
+  ""a"": {
+    ""b"": [
+      {
+        ""c"": 1
+      },
+      {
+        ""c"": 3
+      }
+    ]
+  }
+}
+
+Values for path a.b[1].c are different.
+Expected: 2
+Actual: 3
+", ex.Message, ignoreLineEndingDifferences: true);
     }
   }
 }

@@ -58,3 +58,6 @@ IConfig config = ManualConfig.Create(DefaultConfig.Instance)
 * Added GraylogExporter
 * Removed Excel analyse file generating after run BenchmarkRunner
 * Bump BenchmarkDotNet version to 0.11.5
+
+1.4.0
+* Added excludePaths param to AreJsonObjectsSemanticallyEqual
