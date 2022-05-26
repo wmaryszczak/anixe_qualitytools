@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using Xunit;
@@ -45,7 +46,7 @@ namespace Anixe.QualityTools
       actualObject.Should().BeEquivalentTo(expectedObject);
     }
 
-    public static void AreJsonObjectsSemanticallyEqual(string expected, string actual, IList<string>? excludePaths = null)
+    public static void AreJsonObjectsSemanticallyEqual(string expected, string actual, IEnumerable<string>? excludePaths = null)
     {
       var expectedObject = JsonConvert.DeserializeObject<JToken>(expected);
       var actualObject = JsonConvert.DeserializeObject<JToken>(actual);
@@ -89,7 +90,7 @@ namespace Anixe.QualityTools
       }
     }
 
-    private static void SemanticallyEqual(JToken left, JToken right, IList<string>? excludePaths = null)
+    private static void SemanticallyEqual(JToken left, JToken right, IEnumerable<string>? excludePaths = null)
     {
       if (left.Type != right.Type)
       {
@@ -156,7 +157,7 @@ namespace Anixe.QualityTools
       }
     }
 
-    private static bool SkipExcluded(string path, IList<string>? excludePaths)
+    private static bool SkipExcluded(string path, IEnumerable<string>? excludePaths)
     {
       if (excludePaths == null)
       {
