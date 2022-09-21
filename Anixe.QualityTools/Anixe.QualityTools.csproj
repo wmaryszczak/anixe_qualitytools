@@ -1,15 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Additional tools for testing software</Description>
-    <AssemblyTitle>Anixe.QualityTools</AssemblyTitle>
-    <Version>1.4.0</Version>
+    <Version>1.4.1</Version>
     <Authors>wm</Authors>
+    <Company>ANIXE Polska Sp. z o.o.</Company>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <DebugType>portable</DebugType>
-    <AssemblyName>Anixe.QualityTools</AssemblyName>
-    <PackageId>Anixe.QualityTools</PackageId>
-    <PackageTags>anixe</PackageTags>
-    <PackageProjectUrl>https://github.com/wmaryszczak/anixe_qualitytools</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <IncludeSource>True</IncludeSource>
+    <IncludeSymbols>true</IncludeSymbols>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DebugType>embedded</DebugType>
+    <PackageTags>anixe;quality;tools;tests</PackageTags>
+    <PackageProjectUrl>https://www.nuget.org/packages/Anixe.QualityTools</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/wmaryszczak/anixe_qualitytools</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -18,15 +20,19 @@
     <IsPackable>true</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
     <PackageReference Include="ConsoleMenu-simple" Version="2.4.*" />
-    <PackageReference Include="FluentAssertions.Json" Version="6.0.0" />
+    <PackageReference Include="FluentAssertions.Json" Version="6.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="xunit" Version="2.*" />
-    <PackageReference Include="FluentAssertions" Version="6.2.0" />
+    <PackageReference Include="FluentAssertions" Version="6.7.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\README.md" Pack="true" PackagePath="\"/>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 </Project>

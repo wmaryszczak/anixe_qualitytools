@@ -53,7 +53,7 @@ namespace Anixe.QualityTools
 
       try
       {
-        SemanticallyEqual(expectedObject!, actualObject!, excludePaths);
+        SemanticallyEqual(expectedObject, actualObject, excludePaths);
       }
       catch (Xunit.Sdk.XunitException ex)
       {
@@ -90,7 +90,29 @@ namespace Anixe.QualityTools
       }
     }
 
-    private static void SemanticallyEqual(JToken left, JToken right, IEnumerable<string>? excludePaths = null)
+    private static void SemanticallyEqual(JToken? left, JToken? right, IEnumerable<string>? excludePaths = null)
+    {
+      if (right is null)
+      {
+        if (left is not null)
+        {
+          throw new Xunit.Sdk.XunitException($"Token of path '{left.Path}' of type {left.Type} is not null");
+        }
+      }
+      else
+      {
+        if (left is null)
+        {
+          throw new Xunit.Sdk.XunitException($"Token of path '{right.Path}' of type {right.Type} is not null");
+        }
+        else
+        {
+          SemanticallyEqualImpl(left, right, excludePaths);
+        }
+      }
+    }
+
+    private static void SemanticallyEqualImpl(JToken left, JToken right, IEnumerable<string>? excludePaths = null)
     {
       if (left.Type != right.Type)
       {
@@ -104,7 +126,7 @@ namespace Anixe.QualityTools
 
       switch (left.Type)
       {
-        case (JTokenType.Object):
+        case JTokenType.Object:
           var leftObject = (JObject)left;
           var rightObject = (JObject)right;
 
@@ -115,14 +137,9 @@ namespace Anixe.QualityTools
 
           foreach (var leftObjectItem in leftObject)
           {
-            JToken? rightObjectItem;
-
-            if (rightObject.TryGetValue(leftObjectItem.Key, out rightObjectItem))
+            if (rightObject.TryGetValue(leftObjectItem.Key, out JToken? rightObjectItem))
             {
-              if (leftObjectItem.Value != null && rightObjectItem != null)
-              {
-                SemanticallyEqual(leftObjectItem.Value, rightObjectItem, excludePaths);
-              }
+              SemanticallyEqual(leftObjectItem.Value, rightObjectItem, excludePaths);
             }
             else
             {
@@ -131,7 +148,7 @@ namespace Anixe.QualityTools
           }
 
           break;
-        case (JTokenType.Array):
+        case JTokenType.Array:
           var leftChildren = (JArray)left;
           var rightChildren = (JArray)right;
 

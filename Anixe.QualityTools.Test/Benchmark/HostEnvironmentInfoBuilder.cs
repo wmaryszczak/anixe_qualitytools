@@ -3,8 +3,6 @@ using BenchmarkDotNet.Portability;
 using BenchmarkDotNet.Portability.Cpu;
 using Perfolizer.Horology;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Anixe.QualityTools.Test.Benchmark
 {
@@ -12,7 +10,7 @@ namespace Anixe.QualityTools.Test.Benchmark
   {
     private readonly string architecture = "64mock";
     private readonly string benchmarkDotNetVersion = "0.10.x-mock";
-    private Frequency chronometerFrequency = new Frequency(2531248);
+    private readonly Frequency chronometerFrequency = new Frequency(2531248);
     private readonly string configuration = "CONFIGURATION";
     private string dotNetSdkVersion = "1.0.x.mock";
     private readonly HardwareTimerKind hardwareTimerKind = HardwareTimerKind.Tsc;
@@ -40,15 +38,9 @@ namespace Anixe.QualityTools.Test.Benchmark
       return this;
     }
 
-    public HostEnvironmentInfoBuilder WithoutVMHypervisor()
-    {
-      virtualMachineHypervisor = null;
-      return this;
-    }
-
     public HostEnvironmentInfoBuilder WithoutDotNetSdkVersion()
     {
-      dotNetSdkVersion = null;
+      dotNetSdkVersion = "";
       return this;
     }
 

@@ -19,7 +19,7 @@ namespace Anixe.QualityTools
       {
         return dir;
       }
-      throw new Exception($"Cannot find csproj dir");
+      throw new DirectoryNotFoundException("Cannot find csproj dir");
     }
 
     private static string GetBaseDir(string proj)
@@ -35,7 +35,6 @@ namespace Anixe.QualityTools
       }
       return currDir;
     }
-
 
     private readonly string examplesPath;
 
@@ -66,8 +65,8 @@ namespace Anixe.QualityTools
 
   public static class TestExample
   {
-    private readonly static ConcurrentDictionary<string, byte[]> exampleFilesCache = new ConcurrentDictionary<string, byte[]>();
-    private readonly static TestExamplePath path = new TestExamplePath();
+    private readonly static ConcurrentDictionary<string, byte[]> exampleFilesCache = new();
+    private readonly static TestExamplePath path = new();
 
     public static byte[] ReadAllBytes(Type testCase, string ext = "xml", string? suffix = null)
     {
