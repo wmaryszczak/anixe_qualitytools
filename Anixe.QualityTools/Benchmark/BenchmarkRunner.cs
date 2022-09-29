@@ -16,6 +16,7 @@ namespace Anixe.QualityTools.Benchmark
   public class BenchmarkRunner
   {
     private readonly string? header;
+    private readonly BenchmarkRunnerConfig? runnerConfig;
 
     public static IConfig DefaultConfig { get; } = ManualConfig.CreateEmpty()
       .AddColumnProvider(DefaultColumnProviders.Instance)
@@ -35,9 +36,10 @@ namespace Anixe.QualityTools.Benchmark
         Force = false // tell BenchmarkDotNet not to force GC collections after every iteration
       }).WithEnvironmentVariables(new[] { new EnvironmentVariable("BENCHMARK", "1") }));
 
-    public BenchmarkRunner(string? header = null)
+    public BenchmarkRunner(string? header = null, BenchmarkRunnerConfig? runnerConfig = null)
     {
       this.header = header;
+      this.runnerConfig = runnerConfig;
     }
 
     /// <summary>Run console application with set environment variable BENCHMARK=1</summary>
@@ -53,7 +55,7 @@ namespace Anixe.QualityTools.Benchmark
         RunBenchmarkDotNetTests(args, config);
         return;
       }
-      
+
       RunBenchmarkDotNetTests(args ?? Array.Empty<string>(), config);
 #endif
     }
@@ -61,7 +63,7 @@ namespace Anixe.QualityTools.Benchmark
     private void RunBenchmarkDotNetTests(string[] args, IConfig? config)
     {
       var benchmarkClasses = FindClassesWithMethodAttribute();
-      config = config ?? DefaultConfig;
+      config ??= DefaultConfig;
 
       var menu = new ConsoleMenu(args, level: 1);
       menu.Add("All tests", () =>
@@ -70,17 +72,61 @@ namespace Anixe.QualityTools.Benchmark
         BenchmarkDotNet.Running.BenchmarkRunner.Run(benchmarks);
         Environment.Exit(0);
       });
-      foreach (var benchmarkClass in benchmarkClasses)
+
+      if (this.runnerConfig?.DisplaySubmenuOfMethodsInClass == true)
       {
-        menu.Add(benchmarkClass.Name, () =>
+        foreach (var benchmarkClass in benchmarkClasses)
         {
-          BenchmarkDotNet.Running.BenchmarkRunner.Run(benchmarkClass, config);
+          menu.Add(benchmarkClass.Name, CreateSubmenu(args, config, benchmarkClass).Show);
+        }
+      }
+      else
+      {
+        foreach (var benchmarkClass in benchmarkClasses)
+        {
+          menu.Add(benchmarkClass.Name, () =>
+          {
+            BenchmarkDotNet.Running.BenchmarkRunner.Run(benchmarkClass, config);
+            Environment.Exit(0);
+          });
+        }
+      }
+      menu.Add("Exit", ConsoleMenu.Close);
+      ApplyConfiguration(menu, "Main menu");
+      menu.Show();
+    }
+
+    private ConsoleMenu CreateSubmenu(string[] args, IConfig config, Type benchmarkClass)
+    {
+      var submenu = new ConsoleMenu(args, level: 2);
+      submenu.Add("All", () =>
+      {
+        BenchmarkDotNet.Running.BenchmarkRunner.Run(benchmarkClass, config);
+        Environment.Exit(0);
+      });
+
+      foreach (var method in GetBenchmarkMethods(benchmarkClass))
+      {
+        submenu.Add(method.Name, () =>
+        {
+          BenchmarkDotNet.Running.BenchmarkRunner.Run(benchmarkClass, new[] { method }, config);
           Environment.Exit(0);
         });
       }
-      menu.Add("Exit", ConsoleMenu.Close);
-      menu.Configure(conf => { conf.EnableFilter = true; conf.WriteHeaderAction = () => { Console.WriteLine(this.header); }; });
-      menu.Show();
+      submenu.Add("Back", submenu.CloseMenu);
+      ApplyConfiguration(submenu, benchmarkClass.Name);
+      return submenu;
+    }
+
+    private void ApplyConfiguration(ConsoleMenu menu, string title)
+    {
+      menu.Configure(conf =>
+      {
+        conf.Title = title;
+        conf.EnableFilter = true;
+        conf.WriteHeaderAction = () => Console.WriteLine(this.header);
+        conf.EnableBreadcrumb = true;
+      });
     }
 
     private static Type[] FindClassesWithMethodAttribute()
@@ -89,6 +135,11 @@ namespace Anixe.QualityTools.Benchmark
               .Where(HasAnyBenchmarkMethod)
               .OrderBy(c => c.Name)
               .ToArray();
+    }
+
+    private static MethodInfo[] GetBenchmarkMethods(Type t)
+    {
+      return Array.FindAll(t.GetMethods(), HasBenchmarkAttribute);
     }
 
     private static bool HasAnyBenchmarkMethod(Type t)

@@ -11,7 +11,7 @@ PROJECT_NAME=`echo $CSPROJ | sed "s/.csproj//g"`
 PROJECT_VERSION=`cat $CSPROJ | grep "<Version>" | xargs | sed "s/<Version>//g" | sed "s/<\/Version>//g"`
 
 FULL_PACKAGE_NAME="$PROJECT_NAME.$PROJECT_VERSION.nupkg"
-FULL_PACKAGE_NAME_SYMBOLS="$PROJECT_NAME.$PROJECT_VERSION.symbols.nupkg"
+FULL_PACKAGE_NAME_SYMBOLS="$PROJECT_NAME.$PROJECT_VERSION.snupkg"
 
 EXPECTED_PACKAGE_NAME=$"$PROJECT_NAME $PROJECT_VERSION"
 EXISTING_PACKAGE_NAME="$(nuget list "$EXPECTED_PACKAGE_NAME" -Source "$NUGET_SOURCE")"
@@ -49,9 +49,8 @@ fi
 
 # Prepare packages
 dotnet restore || exit 1
-dotnet pack -c Release --include-symbols --include-source || exit 1
+dotnet pack -c Release --include-symbols --include-source -p:SymbolPackageFormat=snupkg || exit 1
 cd bin/Release || exit 1
 
 # Push packages
 dotnet nuget push $FULL_PACKAGE_NAME -k $NUGET_KEY --source $NUGET_SOURCE
-dotnet nuget push $FULL_PACKAGE_NAME_SYMBOLS -k $NUGET_KEY --source $NUGET_SOURCE
