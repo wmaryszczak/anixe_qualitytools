@@ -13,6 +13,8 @@ namespace Anixe.QualityTools
 {
   public static class AssertHelper
   {
+    private static readonly JsonSerializerSettings DisableDateParseSettings = new() { DateParseHandling = DateParseHandling.None };
+
     public static void AreXmlDocumentsEqual(string expected, string actual)
     {
       var actualXml = XDocument.Parse(actual);
@@ -48,8 +50,8 @@ namespace Anixe.QualityTools
 
     public static void AreJsonObjectsSemanticallyEqual(string expected, string actual, IEnumerable<string>? excludePaths = null)
     {
-      var expectedObject = JsonConvert.DeserializeObject<JToken>(expected);
-      var actualObject = JsonConvert.DeserializeObject<JToken>(actual);
+      var expectedObject = JsonConvert.DeserializeObject<JToken>(expected, DisableDateParseSettings);
+      var actualObject = JsonConvert.DeserializeObject<JToken>(actual, DisableDateParseSettings);
 
       try
       {
@@ -132,7 +134,7 @@ namespace Anixe.QualityTools
 
           if (leftObject.Count != rightObject.Count)
           {
-            throw new Xunit.Sdk.XunitException($"Objects for path {left.Path} are different.{Environment.NewLine}Expected:{Environment.NewLine}{leftObject.ToString()}{Environment.NewLine}Actual:{Environment.NewLine}{rightObject.ToString()}");
+            throw new Xunit.Sdk.XunitException($"Objects for path {left.Path} are different.{Environment.NewLine}Expected:{Environment.NewLine}{leftObject}{Environment.NewLine}Actual:{Environment.NewLine}{rightObject}");
           }
 
           foreach (var leftObjectItem in leftObject)

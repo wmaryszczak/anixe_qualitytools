@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Additional tools for testing software</Description>
-    <Version>1.5.0</Version>
+    <Version>1.5.1</Version>
     <Authors>wm</Authors>
     <Company>ANIXE Polska Sp. z o.o.</Company>
     <TargetFramework>netstandard2.0</TargetFramework>

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -428,8 +429,6 @@ Token of path 'a.b' of type Integer is different from 'a.b' of type Object
       Assert.Null(ex);
     }
 
-
-
     [Fact]
     public void AreJsonObjectsSemanticallyEqual_WhenArrayExcludePathIsGiven_ItFails()
     {
@@ -495,6 +494,25 @@ Values for path a.b[1].c are different.
 Expected: 2
 Actual: 3
 ", ex.Message, ignoreLineEndingDifferences: true);
+    }
+    
+    
+    [Fact]
+    public void AreJsonObjectsSemanticallyEqual_Should_Fail_Assertion_If_Dates_Differ_By_Z_Suffix()
+    {
+      var a = "\"2022-10-01T22:00:00Z\"";
+      var b = "\"2022-10-01T22:00:00\"";
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(a, b));
+      Assert.NotNull(ex);
+    }
+    
+    [Fact]
+    public void AreJsonObjectsSemanticallyEqual_Should_Fail_Assertion_If_Dates_Differ_By_Format()
+    {
+      var a = "\"2022-10-01T22:00:00\"";
+      var b = "\"01.10.2022 22:00:00\"";
+      var ex = Record.Exception(() => AssertHelper.AreJsonObjectsSemanticallyEqual(a, b));
+      Assert.NotNull(ex);
     }
   }
 }
