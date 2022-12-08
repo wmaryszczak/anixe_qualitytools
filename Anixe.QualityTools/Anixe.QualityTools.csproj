@@ -23,7 +23,7 @@
     <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
     <PackageReference Include="ConsoleMenu-simple" Version="2.4.*" />
     <PackageReference Include="FluentAssertions.Json" Version="6.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="xunit" Version="2.*" />
     <PackageReference Include="FluentAssertions" Version="6.7.0" />
   </ItemGroup>
