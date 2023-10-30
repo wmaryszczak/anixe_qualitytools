@@ -253,3 +253,5 @@ paket-files/
 
 # GitExtensions
 *.orig
+.config
+.csharpierrc.json
