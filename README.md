@@ -8,6 +8,7 @@ Package contains:
 - [TestExample](#testexample)
 - [BenchmarkRunner](#benchmarkrunner)
 - [GraylogExporter](#graylogexporter)
+- [TmpFile](#tmpfile)
 
 ## AssertHelper
 
@@ -43,27 +44,20 @@ IConfig config = ManualConfig.Create(DefaultConfig.Instance)
                    .With(new GrayLogExporter("Anixe.IO", "graylog-gelf.xxx.com", 5558))
 ```
 
-# Changelog
+## TmpFile
 
-1.5.0 - 2022-09-29
-* added BenchmarkRunner constructor parameter being config that allows to enable submenu for methods in benchmark class
+The purpose of this class is to have a file which has unique filename and is IDisposable so it can be used in the unit test as a resource with a lifecycle similar to IDisposable object
 
-1.4.0
-* Added excludePaths param to AreJsonObjectsSemanticallyEqual
-
-1.3.1 - 2021-11-03
-* Updated dependencies
-
-1.2.3-1.2.4
-* Add LoadTestFixture based on reflection for parameterless loading examples
-
-1.2.2
-* Add p field to graylog export
-
-1.2.1
-* Fix cannot use custom config in BenchmarkRunner in "all" mode
-
-1.2.0
-* Added GraylogExporter
-* Removed Excel analyse file generating after run BenchmarkRunner
-* Bump BenchmarkDotNet version to 0.11.5
+```cs
+var path = string.Empty;
+using (var file = TmpFile.Create(".", ".csv"))
+{
+  path = file.FullPath;
+  Assert.Equal(".csv", Path.GetExtension(path));
+  Assert.True(File.Exists(path));
+  File.WriteAllText(file.FullPath, "test");
+  var content = File.ReadAllText(file.FullPath);
+  Assert.Equal("test", content);
+}
+Assert.False(File.Exists(path));
+```
